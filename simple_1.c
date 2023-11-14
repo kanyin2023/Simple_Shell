@@ -7,7 +7,10 @@
 #define MAX_INPUT_LEN 1024
 #define MAX_ARGS 64
 
-ssize_t my_getline(char **line, size_t *len, FILE *stream);
+ssize_t my_getline(char **line, size_t *len, FILE *stream) 
+{
+    return getline(line, len, stream);
+}
 
 void handle_exit(void)
 {

@@ -7,6 +7,8 @@
 #define MAX_INPUT_LEN 1024
 #define MAX_ARGS 64
 
+ssize_t my_getline(char **line, size_t *len, FILE *stream);
+
 void handle_exit(void)
 {
 	exit(0);
@@ -89,7 +91,7 @@ void execute_command(char **args)
 		wait(NULL);
 	}
 }
-int main(void)
+int main(void)	
 {
 	char *input = NULL;
 	size_t len = 0;
@@ -100,7 +102,7 @@ int main(void)
 		char **args;
 		/* Display a prompt */
 		printf("$ ");
-		read = getline(&input, &len, stdin);
+		read = my_getline(&input, &len, stdin);
 		if (read == -1)
 		{
 			printf("\n");
@@ -123,9 +125,11 @@ int main(void)
 				free(input);
 				handle_exit();
 			}
-			execute_command(args);
+		execute_command(args);
 			free(args);
 		}
 		free(input);
+	}
+
 		return (0);
 }

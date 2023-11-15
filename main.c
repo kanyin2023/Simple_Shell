@@ -3,7 +3,7 @@
 /*
  * File: simple_shell.c
  * Description: A simple shell program that allows users to execute commands.
- * Author: Adeniran faruq and foloronso maryam
+ * Author: Adeniran Faruq and Folorunso Maryam
  * Date: November 15, 2023.
  */
 void sigint_handler(int sig);
@@ -70,18 +70,15 @@ char **my_strtok(const char *delim, char *buffer)
 	tokens = malloc(sizeof(char *) * 1024);
 	if (!tokens)
 	{
-		free(line);
-		line = NULL;
+		free(line), line = NULL;
 		return (NULL);
 	}
 	/* Split the line into tokens using strtok */
 	token = strtok(line, delim);
 	if (token == NULL)
 	{
-		free(line);
-		line = NULL;
-		free(tokens);
-		tokens = NULL;
+		free(line), line = NULL;
+		free(tokens), tokens = NULL;
 		return (NULL);
 	}
 	while (token)
@@ -92,8 +89,7 @@ char **my_strtok(const char *delim, char *buffer)
 		i++;
 	}
 	tokens[i] = NULL;
-	free(line);
-	line = NULL;
+	free(line), line = NULL;
 	return (tokens);
 }
 /**
@@ -244,11 +240,11 @@ int myfork(char **argv, char **av, char **environ)
 int main(int ac, char **av, char **environ)
 {
 	char *prompt = "#simple_shell$ ";
-	char **argv = NULL;
-	int  status = 0;
+	char **argv = NULL, *endptr;
+	int i, status = 0;
 	long exit_status;
 	bool interactive = isatty(fileno(stdin));
-	(void)ac;
+	(void) ac;
 
 	signal(SIGINT, sigint_handler);
 	while (1)
@@ -280,7 +276,7 @@ int main(int ac, char **av, char **environ)
 					else
 					{
 						/*If the exit status is 1000, set it to 232*/
-					if (exit_status == 1000)
+						if (exit_status == 1000)
 						{
 							status = 232;
 						}
@@ -304,16 +300,12 @@ int main(int ac, char **av, char **environ)
 				status = 2;
 			}
 			for (i = 0; argv[i]; i++)
-				free(argv[i]);
-				argv[i] = NULL;
-			free(argv)
-			argv = NULL;
+				free(argv[i]), argv[i] = NULL;
+			free(argv), argv = NULL;
 		}
-		free(lineptr);
-		lineptr = NULL;
+		free(lineptr), lineptr = NULL;
 		}
 	}
-	free(lineptr);
-	lineptr = NULL;
+	free(lineptr), lineptr = NULL;
 	return (status);
 }

@@ -1,11 +1,12 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>
+#include <stdio.h>
 
 #define MAX_INPUT_LEN 1024
 #define MAX_ARGS 64
+
 
 ssize_t my_getline(char **line, size_t *len, FILE *stream) 
 {
@@ -16,24 +17,28 @@ void handle_exit(void)
 {
 	exit(0);
 }
+extern char **environ;
 
-char **split_line(char *line)
+char *input = NULL;
+size_t len = 0;
+
+char **split_line(void)
 {
 	int i = 0;
-	char **tokens = malloc(MAX_ARGS * sizeof(char *));
+	char **tokens;
 	char *token;
+
+	tokens = malloc(sizeof(char *) * (i + 1));
 
 	if (tokens == NULL)
 	{
 		perror("Memory allocation error");
 		exit(1);
 	}
-	token = strtok(line, " \t\n");
-	while (token != NULL)
+	while ((token = strtok(NULL, " \t\n")) != NULL)
 	{
 		tokens[i] = token;
 		i++;
-		token = strtok(NULL, " \t\n");
 	}
 	tokens[i] = NULL;
 	return (tokens);
@@ -94,45 +99,55 @@ void execute_command(char **args)
 		wait(NULL);
 	}
 }
+
+void print_enviroment (void)
+{
+	char ** env = environ;
+	while (*env != NULL)
+	{
+		printf("%s\n", *env);
+		env++;
+	}
+}
+
 int main(void)	
 {
 	char *input = NULL;
 	size_t len = 0;
-	ssize_t read;
 
+ 
 	while (1)
 	{
 		char **args;
 		/* Display a prompt */
 		printf("$ ");
-		read = my_getline(&input, &len, stdin);
-		if (read == -1)
+		my_getline(&input, &len, stdin);
+		if (getline(&input, &len, stdin ) == -1)
 		{
 			printf("\n");
-			free(input);
-			exit(0);
-			/* Remove the newline character from the input */
-			if (input[read - 1] == '\n')
-			{
-				input[read - 1] = '\0';
-			}
+			handle_exit();
+		}
 			args = split_line(input);
-			if (args[0] == NULL)
+			if (args == NULL)
 			{
-				free(args);
-				continue;
-			}
-			if (strcmp(args[0], "exit") == 0)
+				if (strcmp(args[0], "exit") == 0)
 			{
 				free(args);
 				free(input);
-				handle_exit();
+          				handle_exit();
 			}
-		execute_command(args);
+				else if (strcmp(args[0], "env") == 0){
+					print_enviroment ();
+					free(args);
+					continue;
+				}
+				else {
+					execute_command(args);
+				}
+			}
 			free(args);
 		}
-		free(input);
-	}
 
+		free(input);
 		return (0);
 }
